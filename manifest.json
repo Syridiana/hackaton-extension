@@ -1,21 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Grabador de Audio y Transcriptor",
+  "name": "Grabar Audio",
   "version": "1.0",
-  "description": "Graba audio del micrófono y lo envía para transcripción",
+  "description": "Extensión para grabar audio desde el micrófono y descargarlo.",
   "permissions": [
-        "scripting",
-    "activeTab"
-  ],
-  "host_permissions": [
-    "<all_urls>",
-       "http://*/",
-    "https://*/"
+    "audioCapture",
+    "downloads"
   ],
   "action": {
     "default_popup": "popup.html"
-  },
-  "background": {
-    "service_worker": "background.js"
   }
 }
