@@ -53,6 +53,7 @@ function generateMedicalNote() {
 }
 
 recordBtn.addEventListener('click', () => {
+  navigator.mediaDevices.getUserMedia({audio: true})
   if (isRecording) {
     stopRecording();
   } else {
