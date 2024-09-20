@@ -1,41 +1,45 @@
-let mediaRecorder;
-let audioChunks = [];
-
 const startBtn = document.getElementById('start-btn');
-const stopBtn = document.getElementById('stop-btn');
 const downloadLink = document.getElementById('download-link');
 
 startBtn.addEventListener('click', async () => {
-  // Solicitar acceso al micrófono
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
+  // Parámetros para capturar solo el audio de la pestaña
+  const captureOptions = {
+    audio: true,
+    video: false
+  };
 
-    mediaRecorder.start();
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-    downloadLink.style.display = 'none';
-    audioChunks = [];
+  chrome.tabCapture.capture(captureOptions, stream => {
+    if (chrome.runtime.lastError || !stream) {
+      console.error('Error capturando la pestaña:', chrome.runtime.lastError);
+      alert('Error al intentar capturar la pestaña. Verifica los permisos.');
+      return;
+    }
 
-    mediaRecorder.addEventListener('dataavailable', event => {
+    // Aquí manejamos el flujo de datos del stream de audio
+    const mediaRecorder = new MediaRecorder(stream);
+    let audioChunks = [];
+
+    // Almacenar los fragmentos de audio a medida que están disponibles
+    mediaRecorder.ondataavailable = (event) => {
       audioChunks.push(event.data);
-    });
+    };
 
-    mediaRecorder.addEventListener('stop', () => {
+    // Cuando se detiene la grabación, generamos el enlace de descarga
+    mediaRecorder.onstop = () => {
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       const audioUrl = URL.createObjectURL(audioBlob);
       downloadLink.href = audioUrl;
       downloadLink.style.display = 'block';
-    });
+    };
 
-  } catch (err) {
-    console.error('Error al acceder al micrófono:', err.message);
-    alert('No se pudo acceder al micrófono. Por favor, verifica los permisos y que tu dispositivo tenga un micrófono disponible.');
-  }
-});
+    // Iniciar la grabación
+    mediaRecorder.start();
+    startBtn.disabled = true; // Deshabilitar el botón de inicio durante la grabación
 
-stopBtn.addEventListener('click', () => {
-  mediaRecorder.stop();
-  startBtn.disabled = false;
-  stopBtn.disabled = true;
+    // Detener la grabación luego de 5 segundos (puedes ajustar este tiempo)
+    setTimeout(() => {
+      mediaRecorder.stop();
+      startBtn.disabled = false; // Habilitar el botón de inicio nuevamente
+    }, 5000); // Grabar durante 5 segundos
+  });
 });
