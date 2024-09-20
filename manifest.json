@@ -1,13 +1,20 @@
 {
     "manifest_version": 3,
-    "name": "Transcripción de Audio en Tiempo Real",
+    "name": "Mi Extensión de Debugging",
     "version": "1.0",
-    "description": "Transcribe el audio del sistema en tiempo real",
-    "permissions": ["tabCapture", "audioCapture"],
+    "description": "Una extensión para demostrar el debugging",
+    "permissions": ["activeTab",    "tabCapture", "audioCapture"],
     "action": {
       "default_popup": "popup.html"
     },
     "background": {
       "service_worker": "background.js"
-    }
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ],
+    "devtools_page": "devtools.html"
   }

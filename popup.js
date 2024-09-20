@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const transcriptDiv = document.getElementById('transcript');
   
     startButton.addEventListener('click', function() {
+        console.log('click start')
       chrome.runtime.sendMessage({action: "startRecording"});
       transcriptDiv.innerHTML = "Transcripción iniciada...";
     });
