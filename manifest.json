@@ -1,10 +1,13 @@
 {
     "manifest_version": 3,
-    "name": "My First Extension",
+    "name": "Transcripción de Audio en Tiempo Real",
     "version": "1.0",
-    "description": "A simple Chrome extension",
+    "description": "Transcribe el audio del sistema en tiempo real",
+    "permissions": ["tabCapture", "audioCapture"],
     "action": {
       "default_popup": "popup.html"
     },
-    "permissions": []
+    "background": {
+      "service_worker": "background.js"
+    }
   }

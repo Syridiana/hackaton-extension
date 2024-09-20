@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My First Extension</title>
+  <title>Transcripción de Audio en Tiempo Real</title>
+  <style>
+    body { width: 300px; padding: 10px; }
+    #transcript { height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 5px; }
+  </style>
 </head>
 <body>
-  <h1>Hello, World!</h1>
-  <button id="changeColor">Change color</button>
+  <h1>Transcripción de Audio</h1>
+  <button id="startTranscription">Iniciar Transcripción</button>
+  <button id="stopTranscription">Detener Transcripción</button>
+  <div id="transcript"></div>
   <script src="popup.js"></script>
 </body>
 </html>
