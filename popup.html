@@ -1,17 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Transcripción de Audio en Tiempo Real</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Consultation App</title>
   <style>
-    body { width: 300px; padding: 10px; }
-    #transcript { height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 5px; }
+    body {
+      width: 400px;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #e6f2ff, #e6e6ff);
+      padding: 20px;
+    }
+    .container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #4b0082;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .record-btn {
+      background-color: #4b0082;
+      color: white;
+    }
+    .record-btn:hover {
+      background-color: #380062;
+    }
+    .copy-btn {
+      background-color: #e0e0e0;
+    }
+    .copy-btn:hover {
+      background-color: #d0d0d0;
+    }
+    .tab-switch {
+      display: flex;
+      background-color: #e0e0e0;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 16px;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background-color: #4b0082;
+      color: white;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+    }
+    .message {
+      text-align: center;
+      margin-top: 10px;
+      padding: 5px;
+      border-radius: 4px;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
   </style>
 </head>
 <body>
-  <h1>Transcripción de Audio</h1>
-  <button id="startTranscription">Iniciar Transcripción</button>
-  <button id="stopTranscription">Detener Transcripción</button>
-  <div id="transcript"></div>
+  <div class="container">
+    <h1>Consulta Médica</h1>
+    <div class="controls">
+      <button id="recordBtn" class="record-btn">Grabar</button>
+      <div class="tab-switch">
+        <button id="notesTab" class="tab-btn active">Apuntes</button>
+        <button id="medicalNoteTab" class="tab-btn">Nota Médica</button>
+      </div>
+      <button id="copyBtn" class="copy-btn">Copiar</button>
+    </div>
+    <div id="message" class="message" style="display: none;"></div>
+    <textarea id="notesArea" placeholder="Escriba sus apuntes aquí..."></textarea>
+  </div>
   <script src="popup.js"></script>
 </body>
 </html>
