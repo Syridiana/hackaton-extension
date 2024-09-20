@@ -4,10 +4,13 @@
   "version": "1.0",
   "description": "Graba audio del micrófono y lo envía para transcripción",
   "permissions": [
+        "scripting",
     "activeTab"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "<all_urls>",
+       "http://*/",
+    "https://*/"
   ],
   "action": {
     "default_popup": "popup.html"
