@@ -1,10 +1,10 @@
 {
-    "manifest_version": 3,
-    "name": "My First Extension",
-    "version": "1.0",
-    "description": "A simple Chrome extension",
-    "action": {
-      "default_popup": "popup.html"
-    },
-    "permissions": []
+  "manifest_version": 3,
+  "name": "Medical Consultation App",
+  "version": "1.0",
+  "description": "A simple medical consultation note-taking app",
+  "permissions": ["clipboardWrite"],
+  "action": {
+    "default_popup": "popup.html"
   }
+}
