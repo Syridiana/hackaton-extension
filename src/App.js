@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import './styles.css';
 
 const App = () => {
     const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -41,7 +42,7 @@ const App = () => {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div className="app">
             <h1>Grabador de Audio</h1>
             {isRecording ? (
                 <button onClick={stopRecording}>Detener Grabación</button>
