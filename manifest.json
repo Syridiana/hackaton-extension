@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Medical Consultation App",
   "version": "1.0",
-  "description": "A simple medical consultation note-taking app",
+  "description": "A medical consultation note-taking app with speech-to-text",
   "permissions": ["clipboardWrite"],
   "action": {
     "default_popup": "popup.html"
