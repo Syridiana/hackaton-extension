@@ -1,100 +1,70 @@
-let isRecording = false;
-let recordingTime = 0;
-let recordingInterval;
-let activeTab = 'notes';
+let mediaRecorder;
+let audioChunks = [];
+let recognition;
+let stream;
 
-const recordBtn = document.getElementById('recordBtn');
-const notesTab = document.getElementById('notesTab');
-const medicalNoteTab = document.getElementById('medicalNoteTab');
-const copyBtn = document.getElementById('copyBtn');
-const notesArea = document.getElementById('notesArea');
-const messageEl = document.getElementById('message');
+document.getElementById('requestPermission').onclick = async () => {
+  try {
+    // Solo solicitamos el permiso sin iniciar la grabación
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    document.getElementById('requestPermission').style.display = 'none';
+    document.getElementById('record').style.display = 'inline-block';
+    document.getElementById('status').textContent = 'Permiso concedido. Listo para grabar.';
+  } catch (error) {
+    if (error.name === 'NotAllowedError') {
+      alert('Se requiere permiso de micrófono. Por favor, permite el acceso e intenta de nuevo.');
+    } else {
+      console.error('Error al acceder al micrófono:', error);
+      alert('Ocurrió un error al intentar acceder al micrófono.');
+    }
+  }
+};
 
-function formatTime(seconds) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-}
+document.getElementById('record').onclick = () => {
+  if (!stream) {
+    alert('Por favor, concede el permiso de micrófono primero.');
+    return;
+  }
 
-function startRecording() {
-  isRecording = true;
-  recordingTime = 0;
-  recordBtn.textContent = '00:00';
-  recordBtn.style.backgroundColor = '#dc3545';
-  notesTab.click();
-  notesArea.value = '';
-  notesArea.placeholder = 'Escriba sus apuntes aquí...';
-  notesArea.readOnly = false;
-
-  recordingInterval = setInterval(() => {
-    recordingTime++;
-    recordBtn.textContent = formatTime(recordingTime);
-  }, 1000);
-}
-
-function stopRecording() {
-  isRecording = false;
-  clearInterval(recordingInterval);
-  recordBtn.textContent = 'Grabar';
-  recordBtn.style.backgroundColor = '#4b0082';
-  generateMedicalNote();
-}
-
-function generateMedicalNote() {
-  const notes = notesArea.value.trim();
-  if (!notes) return;
-
-  const date = new Date().toLocaleDateString();
-  const duration = formatTime(recordingTime);
-  const medicalNote = `NOTA MÉDICA\n\nFecha: ${date}\nDuración: ${duration}\n\nAPUNTES: ${notes}\n\nPLAN DE ACCIÓN:\n1. Realizar exámenes\n2. Seguimiento en 2 semanas`;
+  mediaRecorder = new MediaRecorder(stream);
   
-  notesArea.value = medicalNote;
-  medicalNoteTab.click();
-}
+  recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = 'es-ES';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  
+  let finalTranscript = '';
+  
+  recognition.onresult = (event) => {
+    let interimTranscript = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript;
+      } else {
+        interimTranscript += event.results[i][0].transcript;
+      }
+    }
+    document.getElementById('transcription').innerHTML = 
+      finalTranscript + '<i style="color:#999">' + interimTranscript + '</i>';
+  };
+  
+  recognition.onerror = (event) => {
+    console.error('Error de reconocimiento:', event.error);
+  };
+  
+  mediaRecorder.start();
+  recognition.start();
+  document.getElementById('record').disabled = true;
+  document.getElementById('stop').disabled = false;
+  document.getElementById('status').textContent = 'Grabando...';
+};
 
-recordBtn.addEventListener('click', () => {
-  navigator.mediaDevices.getUserMedia({audio: true})
-  if (isRecording) {
-    stopRecording();
-  } else {
-    startRecording();
+document.getElementById('stop').onclick = () => {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+    recognition.stop();
+    document.getElementById('record').disabled = false;
+    document.getElementById('stop').disabled = true;
+    document.getElementById('status').textContent = 'Grabación detenida.';
   }
-});
-
-notesTab.addEventListener('click', () => {
-  if (!isRecording) {
-    activeTab = 'notes';
-    notesTab.classList.add('active');
-    medicalNoteTab.classList.remove('active');
-    notesArea.placeholder = 'Escriba sus apuntes aquí...';
-    notesArea.readOnly = false;
-  }
-});
-
-medicalNoteTab.addEventListener('click', () => {
-  if (!isRecording) {
-    activeTab = 'medicalNote';
-    medicalNoteTab.classList.add('active');
-    notesTab.classList.remove('active');
-    notesArea.placeholder = 'La nota médica aparecerá aquí...';
-    notesArea.readOnly = true;
-  }
-});
-
-copyBtn.addEventListener('click', () => {
-  const textToCopy = notesArea.value;
-  navigator.clipboard.writeText(textToCopy).then(() => {
-    showMessage('Copiado al portapapeles', 'success');
-  }, () => {
-    showMessage('Error al copiar', 'error');
-  });
-});
-
-function showMessage(text, type) {
-  messageEl.textContent = text;
-  messageEl.className = `message ${type}`;
-  messageEl.style.display = 'block';
-  setTimeout(() => {
-    messageEl.style.display = 'none';
-  }, 2000);
-}
+};
